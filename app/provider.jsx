@@ -1,6 +1,7 @@
+"use client"
 import { UserDetailContext } from "@/context/UserDetailContext";
 import { supabase } from "@/services/supabaseClient"
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 function Provider({ children }){
 
@@ -17,23 +18,21 @@ function Provider({ children }){
         .select("*")
         .eq('email', user?.email);
 
-        console.log(Users)
+        console.log(users)
         // if not then create new user
-        if(Users?.length==0)
+        if(users?.length==0)
         {
-            await supabase.from("Users")
-            .insert([
+            const { data: insertedUser, error: insertError } = await supabase.from("users").insert([
                 {
                     name:user?.user_metadata?.name,
                     email:user?.email,
                     picture:user?.user_metadata?.picture
                 }
             ])
-            console.log(data);
-            setUser(data);
+            setUser(insertedUser?.[0]);
             return;
         }
-        setUser(Users[0]);
+        setUser(users[0]);
         })
         
     }
