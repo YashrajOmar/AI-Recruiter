@@ -1,13 +1,28 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, useContext, use } from 'react';
-import dynamic from 'next/dynamic';
+// import React, { useEffect, useState, useCallback, useContext, use } from 'react';
+// import dynamic from 'next/dynamic';
+// import Image from 'next/image';
+// import { Clock, Info, Loader2Icon, Video } from 'lucide-react';
+// import { Button } from '@/components/ui/button';
+// import { useParams } from 'next/navigation';
+// import { supabase } from '@/services/supabaseClient';
+// import { InterviewDataContext } from '@/contexts/InterviewDataContext';
+
+
+import { useContext, useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { Clock, Info, Loader2Icon, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/services/supabaseClient';
-// import { toast } from 'your-toast-library'; // Uncomment if using toast notifications
+import { InterviewDataContext } from '@/context/InterviewDataContext';
+import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
+import { ToastContainer } from 'react-toastify';
+
+
+//import { toast } from 'your-toast-library'; // Uncomment if using toast notifications
 
 // Dynamically import Particles with SSR disabled
 const Particles = dynamic(() => import('react-tsparticles'), { ssr: false });
@@ -19,7 +34,7 @@ const Interview = () => {
   const [interviewData, setInterviewData] = useState();
   const [userName, setUserName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [interviewInfo, setInterviewInfo] = useContext(InterviewDataContext);
+  const {interviewInfo, setInterviewInfo} = useContext(InterviewDataContext);
   const router=useRouter();
   const [userEmail, setUserEmail] = useState();
 

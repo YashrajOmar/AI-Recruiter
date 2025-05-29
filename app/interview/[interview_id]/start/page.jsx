@@ -139,15 +139,23 @@ import { InterviewDataContext } from '@/context/InterviewDataContext';
 import Vapi from '@vapi-ai/web';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
-import { Mic, Phone } from 'lucide-react';
-import AlertConfirmation from './AlertConfirmation'; // Adjust path if needed
+import { Loader2Icon, Mic, Phone } from 'lucide-react';
+//import AlertConfirmation from './AlertConfirmation'; // Adjust path if needed
 import Timer from './Timer'; // Make sure you have this component or replace
+//import AlertConfirmation from './components/AlertConfirmation';
+import AlertConfirmation from './_components/AlertConfirmation';
+import axios from 'axios';
+
 
 function StartInterview() {
   const { interviewInfo, setInterviewInfo } = useContext(InterviewDataContext);
   const vapiRef = useRef(null);
   const [activeUser, setActiveUser] = useState(false);
   const [conversation, setConversation] = useState();
+  const {interview_id} = useParams();
+  const router = useRouter()
+  const [loading, setLoading] = useState();
+
   useEffect(() => {
     if (!vapiRef.current) {
       vapiRef.current = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY);
@@ -155,7 +163,46 @@ function StartInterview() {
 
     const vapi = vapiRef.current;
 
-    vapi.on('call-start', () => {
+    // vapi.on('call-start', () => {
+    //   console.log('Call has started.');
+    //   toast('Call Connected Successfully');
+    // });
+
+    // vapi.on('speech-start', () => {
+    //   console.log('Assistant speech has started.');
+    //   setActiveUser(false);
+    // });
+
+    // vapi.on('speech-end', () => {
+    //   console.log('Assistant speech has ended.');
+    //   setActiveUser(true);
+    // });
+
+    // vapi.on('call-end', () => {
+    //   console.log('Call has ended.');
+    //   toast('Interview Ended');
+    //   GenerateFeedback();
+    // });
+
+    // Various assistant messages can come back (like function calls, transcripts, etc)
+// vapi.on("message", (message) => {
+//   console.log(message?.conversation);
+//   setConversation(message?.conversation);
+// });
+
+
+useEffect(() => {
+  const handleMessage = (message) => {
+    console.log('message:', message);
+    if (message?.conversation) {
+      const convoString = JSON.stringify(message.conversation);
+      console.log('Conversation string:', convoString);
+      setConversation(convoString);
+    }
+  };
+
+  vapi.on('message', handleMessage);
+  vapi.on('call-start', () => {
       console.log('Call has started.');
       toast('Call Connected Successfully');
     });
@@ -176,14 +223,39 @@ function StartInterview() {
       GenerateFeedback();
     });
 
-    // Various assistant messages can come back (like function calls, transcripts, etc)
-vapi.on("message", (message) => {
-  console.log(message?.conversation);
-  setConversation(message?.conversation);
-});
+  return () => {
+    vapi.off('message', handleMessage);
+    vapi.off('call-start',() => console.log("END"));
+    vapi.off('speech-start',() => console.log("END"));
+    vapi.off('speech-end',() => console.log("END"));
+    vapi.off('speech-end',() => console.log("END"));
+  };
+}, []);
 
-const GenerateFeedback =() => {
+const GenerateFeedback = async() => {
+    const result = await axios.post('/api/ai-feedback', {
+      conversation: conversation
+    });
+    console.log(result?.data);
+    const Content = result.data.content;
+    const FINAL_CONTENT = Content.replace('```json', '').replace('```',''); // Remove HTML tags
+    console.log(FINAL_CONTENT);
 
+    
+    const { data, error } = await supabase
+      .from('interview-feedback')
+      .insert([
+        { 
+          userName: interviewInfo?.userName,
+          useerEmail: interviewInfo?.userEmail,
+          interview_id: interview_id,
+          feedback:JSON.parse(FINAL_CONTENT),
+          recommended: false
+         },
+      ])
+      .select()
+    console.log(data)
+    router.replace('/interview/'+interview_id+'completed');
 }
 
     if (interviewInfo) {
@@ -241,8 +313,33 @@ Be friendly, witty, and focused on React.
   };
 
   const stopInterview = () => {
-    vapiRef.current?.stop();
+    //vapiRef.current?.stop();
+    vapi.stop();
+    console.log('Interview stopped');
+    setCallEnd(true);
+    GenerateFeedback();
   };
+
+ vapi.on('call-start', () => {
+      console.log('Call has started.');
+      toast('Call Connected Successfully');
+    });
+
+    vapi.on('speech-start', () => {
+      console.log('Assistant speech has started.');
+      setActiveUser(false);
+    });
+
+    vapi.on('speech-end', () => {
+      console.log('Assistant speech has ended.');
+      setActiveUser(true);
+    });
+
+    vapi.on('call-end', () => {
+      console.log('Call has ended.');
+      toast('Interview Ended');
+      GenerateFeedback();
+    });
 
   return (
     <div className="p-10 lg:px-48 xl:px-56">
@@ -259,17 +356,17 @@ Be friendly, witty, and focused on React.
           <Image
             src={'/AI.png'}
             alt="ai"
-            width={100}
-            height={100}
-            className="w-[60px] h-[60px] rounded-full object-cover"
+            width={200}
+            height={200}
+            className="w-[160px] h-[160px] rounded-full object-full"
           />
           <h2>AI Recruiter</h2>
         </div>
         <div className="bg-white h-[400px] rounded-lg border flex flex-col gap-3 items-center justify-center">
-          <h2 className="text-2xl bg-primary text-white p-3 rounded-full px-5">
-            {interviewInfo?.userName[0]}
+          <h2 className="text-7xl bg-primary text-white p-10 rounded-full">
+            {interviewInfo?.userName[0] ?? "?"}
           </h2>
-          <h2>{interviewInfo?.userName}</h2>
+          <h2>{interviewInfo?.userName ?? "No Name"}</h2>
         </div>
       </div>
 
@@ -288,9 +385,11 @@ Be friendly, witty, and focused on React.
 
       <div className="flex justify-center items-center gap-5 mt-7">
         <Mic className="h-12 w-12 p-3 bg-gray-500 text-white rounded-full cursor-pointer" />
-        <AlertConfirmation stopInterview={stopInterview}>
-          <Phone className="h-12 w-12 p-3 bg-red-500 text-white rounded-full cursor-pointer" />
-        </AlertConfirmation>
+        {/*<AlertConfirmation stopInterview={() => stopInterview()}>*/}
+          {!loading <Phone className="h-12 w-12 p-3 bg-red-500 text-white rounded-full cursor-pointer" 
+                onClick={() => stopInterview()}
+          /> : <Loader2Icon className='animate-spin' />}
+        {/*</AlertConfirmation>*/}
       </div>
 
       <h2 className="text-lg font-bold text-center mt-5">
