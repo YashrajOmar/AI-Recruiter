@@ -4,6 +4,7 @@ import { Camera } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { supabase } from '@/services/supabaseClient';
 import { Inter } from 'next/font/google';
+import { useUser } from '@/app/provider';
 
 function LatestInterviewsList() {
   const [interviewList,setInterviewList]=useState([]);
