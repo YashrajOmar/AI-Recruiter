@@ -189,6 +189,9 @@
 
 // export default Interview;
 
+
+
+
 'use client';
 
 import { useContext, useState, useEffect, useCallback } from 'react';
@@ -198,11 +201,6 @@ import { Button } from '@/components/ui/button';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/services/supabaseClient';
 import { InterviewDataContext } from '@/context/InterviewDataContext';
-import dynamic from 'next/dynamic';
-
-// Dynamically import Particles with SSR disabled
-const Particles = dynamic(() => import('react-tsparticles'), { ssr: false });
-import { loadFull } from 'tsparticles';
 
 const Interview = () => {
   const { interview_id } = useParams();
@@ -214,7 +212,6 @@ const Interview = () => {
   const { setInterviewInfo } = useContext(InterviewDataContext);
   const router = useRouter();
 
-  // Fetch interview details on mount or when interview_id changes
   useEffect(() => {
     if (interview_id) GetInterviewDetails();
     // eslint-disable-next-line
@@ -268,31 +265,8 @@ const Interview = () => {
     setLoading(false);
   }, [userName, userEmail, interview_id, setInterviewInfo, router]);
 
-  // Properly memoized particlesInit for react-tsparticles
-  // const particlesInit = useCallback(async (engine) => {
-  //   await loadFull(engine);
-  // }, []);
-  const particlesInit = useCallback(async (engine) => {
-  await loadFull(engine); // Now compatible with v2+
-}, []);
-
-  const particlesOptions = {
-    fullScreen: { enable: true, zIndex: 0 },
-    background: { color: { value: "#e7e7da" } },
-    particles: {
-      number: { value: 80 },
-      shape: { type: "star" },
-      size: { value: 4, random: true },
-      move: { enable: true, speed: 0.8, direction: "none", outModes: { default: "bounce" } },
-      opacity: { value: 0.7 },
-    },
-  };
-
   return (
     <div className="relative px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32 mt-7 min-h-screen">
-      {/* Particles background */}
-      <Particles id="tsparticles" init={particlesInit} options={particlesOptions} />
-
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center justify-center max-w-3xl mx-auto
         border rounded-lg bg-white p-6 sm:p-8 lg:p-10 shadow-lg mb-20">
