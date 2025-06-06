@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { supabase } from '@/services/supabaseClient';
 import { Inter } from 'next/font/google';
 import { useUser } from '@/app/provider';
+import { toast } from 'sonner';
 
 function LatestInterviewsList() {
   const [interviewList,setInterviewList]=useState([]);
@@ -25,6 +26,11 @@ function LatestInterviewsList() {
     setInterviewList(Interviews);
   }
 
+  const copyLink=(url) => {
+    navigator.clipboard.writeText(url);
+    toast('Copied')
+  }
+
     return (
     
     <div className='my-5'><h2 className='font-bold text-2xl'>
@@ -37,7 +43,7 @@ function LatestInterviewsList() {
 
             </div>}
             {interviewList&&
-               <div>
+               <div className='grid grid-cols-2 mt-5 xl:grid-cols-4 gap-5'>
                 {interviewList.map((interview, index) => (
                     <InterviewCard interview={interview} key={index} />
                 ))}

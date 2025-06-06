@@ -322,8 +322,17 @@ function StartInterview() {
   }
 }, []);
 
-  const call = vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISSTANT_ID);
+  //const call = vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISSTANT_ID);
 // { "id": "bd2184a1-bdea-4d4f-9503-b09ca8b185e6", "orgId": "6da6841c-0fca-4604-8941-3d5d65f43a17", "createdAt": "2024-11-13T19:20:24.606Z", "updatedAt": "2024-11-13T19:20:24.606Z", "type": "webCall", ... }
+useEffect(() => {
+  if (typeof window !== 'undefined') {
+    try {
+      vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISSTANT_ID);
+    } catch (err) {
+      console.error('Failed to start Vapi:', err);
+    }
+  }
+}, []);
 
 
   //const { interviewInfo } = useContext(InterviewDataContext);
@@ -653,23 +662,44 @@ const ControlButton = ({ icon: Icon, ...props }) => (
   </button>
 );
 
-const CallEndButton = ({ loading, active, onClick }) => (
-  loading ? (
+// const CallEndButton = ({ loading, active, onClick }) => (
+//   loading ? (
+//     <Loader2Icon className="animate-spin h-12 w-12" />
+//   ) : (
+//     <ControlButton
+//       icon={Phone}
+//       onClick={onClick}
+//       disabled={!active}
+//       className={`${active ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-400'}`}
+//       aria-label="End call"
+//     />
+//   )
+// );
+
+const CallEndButton = ({ loading, active }) => {
+  const router = useRouter();
+  const params = useParams(); // returns an object of dynamic segments
+  const interview_id = params?.interview_id;
+
+  const handleClick = () => {
+    if (!active || !interview_id) return;
+
+    // Navigate to the completed page
+    router.push(`/interview/${interview_id}/completed`);
+  };
+
+  return loading ? (
     <Loader2Icon className="animate-spin h-12 w-12" />
   ) : (
     <ControlButton
       icon={Phone}
-      onClick={onClick}
+      onClick={handleClick}
       disabled={!active}
       className={`${active ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-400'}`}
       aria-label="End call"
     />
-  )
-);
-
-
-
-
+  );
+};
 
 export default StartInterview;
 
