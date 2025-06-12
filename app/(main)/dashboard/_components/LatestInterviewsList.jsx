@@ -20,21 +20,19 @@ function LatestInterviewsList() {
     let { data: Interviews, error } = await supabase
       .from('Interviews')
       .select('*')
-      .eq('userEmail', user?.email);
+      .eq('userEmail', user?.email)
+      .order('id', { ascending: false })
+      .limit(6);
 
     console.log(Interviews);
     setInterviewList(Interviews);
   }
 
-  const copyLink=(url) => {
-    navigator.clipboard.writeText(url);
-    toast('Copied')
-  }
-
+  
     return (
     
     <div className='my-5'><h2 className='font-bold text-2xl'>
-        Previously Created Interviews
+        Previously Created Interviews</h2>
         {interviewList?.length==0&&
         <div className='p-5 flex flex-col gap-3 items-center mt-5 bg-white rounded-lg'>
             <Camera className='h-10 w-10 text-primary'/>
@@ -49,7 +47,7 @@ function LatestInterviewsList() {
                 ))}
                </div>
             }
-        </h2></div>
+        </div>
   )
 }
 
