@@ -10,21 +10,25 @@ function InterviewDetail() {
     const {interview_id}=useParams();
     const {user}=useUser();
     const [InterviewDetail,setInterviewDetail]=useState();
-    useEffect(()=>{
-        user&&GetInterviewDetail();
-    })
+    useEffect(() => {
+  if (user && interview_id) {
+    GetInterviewDetail();
+  }
+}, [user, interview_id]);
+
     const GetInterviewDetail=async()=>{
         const result=await supabase.from('Interviews')
                 .select('jobPosition, duration,jobDecscription,type,questionList,interview_id,created_at,interview-feedback(userEmail,userName,feedback,created_at)')
-               
-               .eq('interview_id',interview_id)
-                
+               .eq('userEmail', user?.email)
+                .order('id', { ascending: false })
+                console.log(result);
                 setInterviewDetail(result?.data[0])
+                console.log(InterviewDetail)
     }
   return (
     <div className='mt-5'><h2 className='font-bold text-2xl'>InterviewDetail</h2>
-    <InterviewDetailContainer InterviewDetail={InterviewDetail}/>
-    <CandidateList CandidateList={InterviewDetail?.['interview-feedback']}/>
+    <InterviewDetailContainer interviewDetail={InterviewDetail}/>
+    {/* <CandidateList CandidateList={InterviewDetail?.['interview-feedback']}/> */}
     </div>
   )
 }

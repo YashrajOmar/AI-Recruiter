@@ -5,9 +5,11 @@ import CandidateFeedbackDialog from './CandidateFeedbackDialog'
 function CandidateList({CandidateList}) {
   return (
     <div className=''>
-        <h2 className='font-bold my-5'>Candidates({candidate?.length})</h2>
+        
         {CandidateList.map((candidate,index)=>{
+            
             <div key={index} className='p-5 flex gap-3 items-center bg-white rounded-lg justify-between'>
+                <h2 className='font-bold my-5'>Candidates({candidate?.length})</h2>
                 <div className='flex items-center gap-5'>
                 <h2 className='bg-primary p-3 px-4.5 text-white font-bold rounded-full'>{candidate.userName[0]}</h2>
                 <div>

@@ -18,6 +18,7 @@ export async function POST(req) {
   apiKey: process.env.OPEN_ROUTER_API_KEY,
   
 })
+
 const completion = await openai.chat.completions.create({
     model: "deepseek/deepseek-chat-v3-0324:free",
     messages: [
@@ -29,6 +30,7 @@ const completion = await openai.chat.completions.create({
   return NextResponse.json(completion.choices[0].message)
 }
 catch(e){
+    console.log(process.env.OPEN_ROUTER_API_KEY)
     console.log(e)
     return NextResponse.json(e)
 }   

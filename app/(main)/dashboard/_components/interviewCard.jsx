@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Copy, Send } from 'lucide-react';
+import { ArrowRight, Copy, Send } from 'lucide-react';
 import moment from 'moment';
 import Link from 'next/link';
 import React from 'react';
@@ -33,7 +33,7 @@ function InterviewCard({ interview, viewDetail=false }) {
           <Button className={'w-full'} onClick={onSend}> <Send /> Send</Button>
         </div>
         :
-        <Link href={'/scheduled-interview'+interview?.interview_id+"/details"}>
+        <Link href={'/scheduled-interview/'+interview?.interview_id+"/details"}>
         <Button className="mt-5 w-full" variant="outline">View Detail <ArrowRight/></Button></Link>
         }
     </div>

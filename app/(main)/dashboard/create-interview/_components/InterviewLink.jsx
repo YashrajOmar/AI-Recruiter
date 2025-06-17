@@ -6,10 +6,10 @@ import Link from 'next/link';
 import React from 'react'
 import { toast } from 'sonner';
 
-function InterviewLink({interview_Id,formData}) {
-    const url=process.env.NEXT_PUBLIC_HOST_URL+'/'+interview_Id
+function InterviewLink({interview_id,formData}) {
+    const url=process.env.NEXT_PUBLIC_HOST_URL+'/'+interview_id
     const GetInterviewUrl=()=>{
-        const url=process.env.NEXT_PUBLIC_HOST_URL+'/'+interview_Id
+        const url=process.env.NEXT_PUBLIC_HOST_URL+'/'+interview_id
         return url;
     }
     const onCopyLink=async()=>{

@@ -1,4 +1,5 @@
 import { Calendar, Clock } from 'lucide-react'
+import moment from 'moment'
 import React from 'react'
 
 function InterviewDetailContainer({interviewDetail}) {

@@ -43,6 +43,7 @@ function CreateInterview() {
          {step==1?<FormContainer onHandleInputChange={onHandleInputChange} GoToNext={OnGoToNext} />
          :step==2?<QuestionList formData={formData} onCreateLink={onCreateLink}/>:
          step==3?<InterviewLink interview_id={interviewid} formData={formData}/>:null}
+         console.log(interviewid)
     </div>
   )
 }
