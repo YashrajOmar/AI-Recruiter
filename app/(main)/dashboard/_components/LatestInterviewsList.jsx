@@ -6,6 +6,7 @@ import { supabase } from '@/services/supabaseClient';
 import { Inter } from 'next/font/google';
 import { useUser } from '@/app/provider';
 import { toast } from 'sonner';
+import InterviewCard from './interviewCard';
 
 function LatestInterviewsList() {
   const [interviewList,setInterviewList]=useState([]);

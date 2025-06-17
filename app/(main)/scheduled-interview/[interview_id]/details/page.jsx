@@ -24,7 +24,7 @@ function InterviewDetail() {
   return (
     <div className='mt-5'><h2 className='font-bold text-2xl'>InterviewDetail</h2>
     <InterviewDetailContainer InterviewDetail={InterviewDetail}/>
-    <CandidateList detail={InterviewDetail?.['interview-feedback']}/>
+    <CandidateList CandidateList={InterviewDetail?.['interview-feedback']}/>
     </div>
   )
 }
