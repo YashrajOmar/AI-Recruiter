@@ -22,9 +22,19 @@ export function AppSidebar() {
   const path=usePathname();
   return (
     <Sidebar>
-      <SidebarHeader className='flex items-center mt-5'>
-        <Image src={"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="} alt="" width={100} height={100} className=""/>
-        <Button className='w-full mt-5'>
+      <SidebarHeader className='flex items-center mt-1'>
+        <Link href="/">
+    <Image
+      src="/logo.png" // ← replace with your actual logo path
+      alt="App Logo"
+      width={880}
+      height={880}
+      className="rounded-lg" // Optional styling
+      priority // Improves loading
+    />
+  </Link>
+        {/* <Image src={"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="} alt="" width={100} height={100} className=""/> */}
+        <Button className='w-full mt-1 '>
           <Plus />Create New Interview
         </Button>
       </SidebarHeader>
