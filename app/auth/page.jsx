@@ -10,19 +10,16 @@ function Login() {
     /**
      * use to sign in with google
      */
-    const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-            redirectTo: `${window.location.origin}/dashboard`  // e.g., https://yourdomain.com/dashboard
+    const signInWithGoogle=async()=>{
+        const {error}=await supabase.auth.signInWithOAuth({
+            provider:'google'
+        })
+
+        if(error)
+        {
+            console.error('Error:', error.message)
         }
-    });
-
-    if (error) {
-        console.error('Error:', error.message);
     }
-};
-
 
     return (
         <div className='flex flex-col items-center justify-center

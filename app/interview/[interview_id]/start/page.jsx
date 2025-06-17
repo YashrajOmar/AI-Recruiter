@@ -299,326 +299,349 @@
 
 
 
-'use client';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { supabase } from '@/services/supabaseClient';
-import { InterviewDataContext } from '@/context/InterviewDataContext';
-import { toast } from 'react-toastify';
-import Image from 'next/image';
-import { Loader2Icon, Mic, Phone } from 'lucide-react';
-import Timer from './Timer';
-import { vapi } from '@/lib/vapi.sdk'; // Corrected import path
-import axios from 'axios';
+// 'use client';
+// import React, { useContext, useEffect, useRef, useState } from 'react';
+// import { useParams, useRouter } from 'next/navigation';
+// import { supabase } from '@/services/supabaseClient';
+// import { InterviewDataContext } from '@/context/InterviewDataContext';
+// import { toast } from 'react-toastify';
+// import Image from 'next/image';
+// import { Loader2Icon, Mic, Phone } from 'lucide-react';
+// import Timer from './Timer';
+// import { vapi } from '@/lib/vapi.sdk'; // Corrected import path
+// import axios from 'axios';
 
 
-function StartInterview() {
+// function StartInterview() {
 
-  useEffect(() => {
-  if (!vapi || !vapi.start) {
-    console.error("Vapi not initialized properly.");
-  } else {
-    console.log("Vapi is ready.");
-  }
-}, []);
+//   useEffect(() => {
+//   if (!vapi || !vapi.start) {
+//     console.error("Vapi not initialized properly.");
+//   } else {
+//     console.log("Vapi is ready.");
+//   }
+// }, []);
 
-  //const call = vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISSTANT_ID);
-// { "id": "bd2184a1-bdea-4d4f-9503-b09ca8b185e6", "orgId": "6da6841c-0fca-4604-8941-3d5d65f43a17", "createdAt": "2024-11-13T19:20:24.606Z", "updatedAt": "2024-11-13T19:20:24.606Z", "type": "webCall", ... }
-useEffect(() => {
-  if (typeof window !== 'undefined') {
-    try {
-      vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISSTANT_ID);
-    } catch (err) {
-      console.error('Failed to start Vapi:', err);
-    }
-  }
-}, []);
-
-
-  //const { interviewInfo } = useContext(InterviewDataContext);
-  const { interview_id } = useParams();
-  const router = useRouter();
-  
-  const [activeUser, setActiveUser] = useState(false);
-  const [conversation, setConversation] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [callActive, setCallActive] = useState(false);
-  const isMounted = useRef(true); // Prevent state updates after unmount
-
-const { interviewInfo: contextInterviewInfo } = useContext(InterviewDataContext);
-  const interviewInfo = contextInterviewInfo || {
-    userName: 'Yashraj',
-    userEmail: 'yashraj@example.com',
-    InterviewData: {
-      jobPosition: 'Software Engineer',
-      questionList: [
-        { question: 'Tell me about yourself' },
-        { question: 'Why this role?' }
-      ]
-    }
-  };
-  
+//   //const call = vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISSTANT_ID);
+// // { "id": "bd2184a1-bdea-4d4f-9503-b09ca8b185e6", "orgId": "6da6841c-0fca-4604-8941-3d5d65f43a17", "createdAt": "2024-11-13T19:20:24.606Z", "updatedAt": "2024-11-13T19:20:24.606Z", "type": "webCall", ... }
 // useEffect(() => {
-//   console.log("🧪 useEffect triggered - interviewInfo:", interviewInfo);
-//   if (interviewInfo && !callActive) {
-//     console.log("✅ Starting call...");
-//     startCall();
-//   } else if (!interviewInfo) {
-//     console.warn("⚠️ interviewInfo not available yet");
+//   if (typeof window !== 'undefined') {
+//     try {
+//       vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISSTANT_ID);
+//     } catch (err) {
+//       console.error('Failed to start Vapi:', err);
+//     }
 //   }
-// }, [interviewInfo]);
+// }, []);
 
 
-const hasStartedRef = useRef(false);
-useEffect(() => {
-  if (interviewInfo && !callActive && !hasStartedRef.current) {
-    console.log("✅ Starting call...");
-    hasStartedRef.current = true;
-    startCall();
-  }
-}, [interviewInfo, callActive]);
+//   //const { interviewInfo } = useContext(InterviewDataContext);
+//   const { interview_id } = useParams();
+//   const router = useRouter();
+  
+//   const [activeUser, setActiveUser] = useState(false);
+//   const [conversation, setConversation] = useState('');
+//   const [loading, setLoading] = useState(false);
+//   const [callActive, setCallActive] = useState(false);
+//   const isMounted = useRef(true); // Prevent state updates after unmount
+
+// const { interviewInfo: contextInterviewInfo } = useContext(InterviewDataContext);
+//   const interviewInfo = contextInterviewInfo || {
+//     userName: 'Yashraj',
+//     userEmail: 'yashraj@example.com',
+//     InterviewData: {
+//       jobPosition: 'Software Engineer',
+//       questionList: [
+//         { question: 'Tell me about yourself' },
+//         { question: 'Why this role?' }
+//       ]
+//     }
+//   };
+  
+// // useEffect(() => {
+// //   console.log("🧪 useEffect triggered - interviewInfo:", interviewInfo);
+// //   if (interviewInfo && !callActive) {
+// //     console.log("✅ Starting call...");
+// //     startCall();
+// //   } else if (!interviewInfo) {
+// //     console.warn("⚠️ interviewInfo not available yet");
+// //   }
+// // }, [interviewInfo]);
+
+
+// const hasStartedRef = useRef(false);
+// useEffect(() => {
+//   if (interviewInfo && !callActive && !hasStartedRef.current) {
+//     console.log("✅ Starting call...");
+//     hasStartedRef.current = true;
+//     startCall();
+//   }
+// }, [interviewInfo, callActive]);
 
 
 
-  // Named handlers for proper cleanup
-  const handleMessage = (message) => {
-    if (message?.conversation) {
-      setConversation(JSON.stringify(message.conversation));
-    }
-  };
+//   // Named handlers for proper cleanup
+//   const handleMessage = (message) => {
+//     if (message?.conversation) {
+//       setConversation(JSON.stringify(message.conversation));
+//     }
+//   };
 
-  const handleCallStart = () => {
-    setCallActive(true);
-    toast.success('Call Connected Successfully');
-  };
+//   const handleCallStart = () => {
+//     setCallActive(true);
+//     toast.success('Call Connected Successfully');
+//   };
 
-  const handleSpeechStart = () => {
-    setActiveUser(false);
-  };
+//   const handleSpeechStart = () => {
+//     setActiveUser(false);
+//   };
 
-  const handleSpeechEnd = () => {
-    setActiveUser(true);
-  };
+//   const handleSpeechEnd = () => {
+//     setActiveUser(true);
+//   };
 
-  // const handleCallEnd = () => {
-  //   if (!isMounted.current) return;
-  //   setCallActive(false);
-  //   toast.info('Interview Ended');
-  //   generateFeedback();
-  // };
-  const handleCallEnd = () => {
-  if (!isMounted.current) return;
+//   // const handleCallEnd = () => {
+//   //   if (!isMounted.current) return;
+//   //   setCallActive(false);
+//   //   toast.info('Interview Ended');
+//   //   generateFeedback();
+//   // };
+//   const handleCallEnd = () => {
+//   if (!isMounted.current) return;
 
-  setCallActive(false);
-  toast.info('Interview Ended');
+//   setCallActive(false);
+//   toast.info('Interview Ended');
 
-  try {
-    vapi.stop();  // Stops any ongoing call
-    vapi.destroy?.(); // Clean up internal DailyIframe instance if Vapi exposes it
-  } catch (error) {
-    console.error('Error during Vapi cleanup:', error);
-  }
+//   try {
+//     vapi.stop();  // Stops any ongoing call
+//     vapi.destroy?.(); // Clean up internal DailyIframe instance if Vapi exposes it
+//   } catch (error) {
+//     console.error('Error during Vapi cleanup:', error);
+//   }
 
-  generateFeedback(); // Proceed to generate feedback and redirect
-};
+//   generateFeedback(); // Proceed to generate feedback and redirect
+// };
 
 
-  // Event management with proper cleanup
-  useEffect(() => {
-    isMounted.current = true;
+//   // Event management with proper cleanup
+//   useEffect(() => {
+//     isMounted.current = true;
     
-    vapi.on('message', handleMessage);
-    vapi.on('call-start', handleCallStart);
-    vapi.on('speech-start', handleSpeechStart);
-    vapi.on('speech-end', handleSpeechEnd);
-    vapi.on('call-end', handleCallEnd);
+//     vapi.on('message', handleMessage);
+//     vapi.on('call-start', handleCallStart);
+//     vapi.on('speech-start', handleSpeechStart);
+//     vapi.on('speech-end', handleSpeechEnd);
+//     vapi.on('call-end', handleCallEnd);
 
-    return () => {
-      isMounted.current = false;
-      vapi.off('message', handleMessage);
-      vapi.off('call-start', handleCallStart);
-      vapi.off('speech-start', handleSpeechStart);
-      vapi.off('speech-end', handleSpeechEnd);
-      vapi.off('call-end', handleCallEnd);
-      vapi.stop();
-    };
-  }, []);
+//     return () => {
+//       isMounted.current = false;
+//       vapi.off('message', handleMessage);
+//       vapi.off('call-start', handleCallStart);
+//       vapi.off('speech-start', handleSpeechStart);
+//       vapi.off('speech-end', handleSpeechEnd);
+//       vapi.off('call-end', handleCallEnd);
+//       vapi.stop();
+//     };
+//   }, []);
 
-  useEffect(() => {
-    if (interviewInfo && !callActive) {
-      startCall();
-    }
-  }, [interviewInfo]);
+//   useEffect(() => {
+//     if (interviewInfo && !callActive) {
+//       startCall();
+//     }
+//   }, [interviewInfo]);
 
-  const startCall = () => {
-    if (!interviewInfo) return;
+//   const startCall = () => {
+//     if (!interviewInfo) return;
 
-    const questionList = interviewInfo.InterviewData?.questionList
-      ?.map(item => item.question)
-      .join(', ') || '';
+//     const questionList = interviewInfo.InterviewData?.questionList
+//       ?.map(item => item.question)
+//       .join(', ') || '';
 
-    const assistantOptions = {
-      name: 'AI Recruiter',
-      firstMessage: `Hi ${interviewInfo.userName}, ready for your ${interviewInfo.InterviewData.jobPosition} interview?`,
-      transcriber: { provider: 'deepgram', model: 'nova-2' },
-      voice: { provider: 'playht', voiceId: 'jennifer' },
-      model: {
-        provider: 'openai',
-        model: 'gpt-4',
-        messages: [{
-          role: 'system',
-          content: `Conduct interview for ${interviewInfo.InterviewData.jobPosition}. Ask: ${questionList}`
-        }]
-      },
-      userId: interviewInfo.userEmail,
-      interviewId: interview_id
-    };
+//     const assistantOptions = {
+//       name: 'AI Recruiter',
+//       firstMessage: `Hi ${interviewInfo.userName}, ready for your ${interviewInfo.InterviewData.jobPosition} interview?`,
+//       transcriber: { provider: 'deepgram', model: 'nova-2' },
+//       voice: { provider: 'playht', voiceId: 'jennifer' },
+//       model: {
+//         provider: 'openai',
+//         model: 'gpt-4',
+//         messages: [{
+//           role: 'system',
+//           content: `Conduct interview for ${interviewInfo.InterviewData.jobPosition}. Ask: ${questionList}`
+//         }]
+//       },
+//       userId: interviewInfo.userEmail,
+//       interviewId: interview_id
+//     };
 
-    vapi.start(assistantOptions).catch(console.error);
-  };
+//     vapi.start(assistantOptions).catch(console.error);
+//   };
 
   
 
-//   const stopInterview = () => {
-//   setLoading(true);
-//   try {
-//     vapi.stop(); // Not a Promise, no .finally()
-//   } catch (err) {
-//     console.error('Error stopping the call:', err);
-//   } finally {
-//     setLoading(false);
-//   }
-// };
+// //   const stopInterview = () => {
+// //   setLoading(true);
+// //   try {
+// //     vapi.stop(); // Not a Promise, no .finally()
+// //   } catch (err) {
+// //     console.error('Error stopping the call:', err);
+// //   } finally {
+// //     setLoading(false);
+// //   }
+// // };
+// // const stopInterview = () => {
+// //   setLoading(true);
+
+// //   try {
+// //     vapi.stop(); // Stops the call
+// //     vapi.destroy?.(); // Clean up (optional)
+// //   } catch (error) {
+// //     console.error('Error stopping interview:', error);
+// //   } finally {
+// //     setLoading(false);
+// //   }
+// // };
+
+// useEffect(() => {
+//   const handleCallEnded = () => {
+//     console.log("Call ended, navigating to completed page");
+//     router.push("/completed");
+
+//     // Optional: cleanup only *after* navigation
+//     setTimeout(() => {
+//       vapi.destroy?.(); // Now it's safe to destroy
+//     }, 1000);
+//   };
+
+//   vapi.on("call-ended", handleCallEnded);
+//   return () => {
+//     vapi.off("call-ended", handleCallEnded);
+//   };
+// }, []);
+
+
 // const stopInterview = () => {
 //   setLoading(true);
 
 //   try {
-//     vapi.stop(); // Stops the call
-//     vapi.destroy?.(); // Clean up (optional)
+//     vapi.stop(); // Gracefully stops the call
+//     // ❌ DO NOT call vapi.destroy() here
+//     // Let the 'call-ended' event trigger first
 //   } catch (error) {
-//     console.error('Error stopping interview:', error);
-//   } finally {
-//     setLoading(false);
+//     console.error("Error stopping interview:", error);
 //   }
 // };
 
-useEffect(() => {
-  const handleCallEnded = () => {
-    console.log("Call ended, navigating to completed page");
-    router.push("/completed");
 
-    // Optional: cleanup only *after* navigation
-    setTimeout(() => {
-      vapi.destroy?.(); // Now it's safe to destroy
-    }, 1000);
-  };
+//   const generateFeedback = async () => {
+//   if (!conversation) return;
 
-  vapi.on("call-ended", handleCallEnded);
-  return () => {
-    vapi.off("call-ended", handleCallEnded);
-  };
-}, []);
-
-
-const stopInterview = () => {
-  setLoading(true);
-
-  try {
-    vapi.stop(); // Gracefully stops the call
-    // ❌ DO NOT call vapi.destroy() here
-    // Let the 'call-ended' event trigger first
-  } catch (error) {
-    console.error("Error stopping interview:", error);
-  }
-};
-
-
-  const generateFeedback = async () => {
-  if (!conversation) return;
-
-  try {
-    const { data } = await axios.post('/api/ai-feedback', { conversation });
-    // Fix the regex pattern here:
-    const cleaned = data.content.replace(/```/g, '');
+//   try {
+//     const { data } = await axios.post('/api/ai-feedback', { conversation });
+//     // Fix the regex pattern here:
+//     const cleaned = data.content.replace(/```/g, '');
 
     
-    await supabase.from('interview-feedback').insert([{
-      userName: interviewInfo.userName,
-      userEmail: interviewInfo.userEmail,
-      interview_id,
-      feedback: JSON.parse(cleaned),
-      recommended: false
-    }]);
+//     await supabase.from('interview-feedback').insert([{
+//       userName: interviewInfo.userName,
+//       userEmail: interviewInfo.userEmail,
+//       interview_id,
+//       feedback: JSON.parse(cleaned),
+//       recommended: false
+//     }]);
 
-    router.replace(`/interview/${interview_id}/completed`);
-  } catch (error) {
-    console.error('Feedback error:', error);
-    toast.error('Feedback generation failed');
-  }
-};
+//     router.replace(`/interview/${interview_id}/completed`);
+//   } catch (error) {
+//     console.error('Feedback error:', error);
+//     toast.error('Feedback generation failed');
+//   }
+// };
 
 
-  return (
-    <div className="p-10 lg:px-48 xl:px-56">
-      <header className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold">AI Interview Session</h1>
-        <div className="flex items-center gap-2">
-          <Timer initialSeconds={3600} />
-          <span className="font-mono">00:00:00</span>
-        </div>
-      </header>
+//   return (
+//     <div className="p-10 lg:px-48 xl:px-56">
+//       <header className="flex justify-between items-center mb-8">
+//         <h1 className="text-2xl font-bold">AI Interview Session</h1>
+//         <div className="flex items-center gap-2">
+//           <Timer initialSeconds={3600} />
+//           <span className="font-mono">00:00:00</span>
+//         </div>
+//       </header>
 
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <ParticipantCard 
-          image="/AI.png" 
-          name="AI Recruiter" 
-          alt="AI Assistant"
-          width={100} 
-          height={100} 
-        />
-        <ParticipantCard
-          initial={interviewInfo?.userName?.[0] || '?'}
-          name={interviewInfo?.userName || 'Guest'}
-        />
-      </div>
+//       <div className="grid md:grid-cols-2 gap-6 mb-8">
+//         <ParticipantCard 
+//           image="/AI.png" 
+//           name="AI Recruiter" 
+//           alt="AI Assistant"
+//           width={100} 
+//           height={100} 
+//         />
+//         <ParticipantCard
+//           initial={interviewInfo?.userName?.[0] || '?'}
+//           name={interviewInfo?.userName || 'Guest'}
+//         />
+//       </div>
 
-      <div className="text-center mb-6">
-        <StatusIndicator activeUser={activeUser} />
-      </div>
+//       <div className="text-center mb-6">
+//         <StatusIndicator activeUser={activeUser} />
+//       </div>
 
-      <div className="flex justify-center gap-4">
-        <ControlButton
-          icon={Mic}
-          aria-label="Microphone"
-          className="bg-gray-500 hover:bg-gray-600"
-        />
-        <CallEndButton 
-          loading={loading}
-          active={callActive}
-          onClick={stopInterview}
-        />
-      </div>
+//       <div className="flex justify-center gap-4">
+//         <ControlButton
+//           icon={Mic}
+//           aria-label="Microphone"
+//           className="bg-gray-500 hover:bg-gray-600"
+//         />
+//         <CallEndButton 
+//           loading={loading}
+//           active={callActive}
+//           onClick={stopInterview}
+//         />
+//       </div>
 
-      <p className="text-center mt-6 text-gray-600 italic">
-        😏 Testing your knowledge - bring your A-game!
-      </p>
-    </div>
-  );
-}
+//       <p className="text-center mt-6 text-gray-600 italic">
+//         😏 Testing your knowledge - bring your A-game!
+//       </p>
+//     </div>
+//   );
+// }
 
-// Extracted components for better readability
-// const ParticipantCard = ({ image, initial, name, alt }) => (
+// // Extracted components for better readability
+// // const ParticipantCard = ({ image, initial, name, alt }) => (
+// //   <div className="bg-white rounded-lg border p-6 flex flex-col items-center">
+// //     {image ? (
+// //       <Image
+// //         src={image}
+// //         alt={alt}
+// //         width={160}
+// //         height={160}
+// //         className="rounded-full object-cover"
+// //       />
+// //     ) : (
+// //       <div className="text-7xl bg-primary text-white rounded-full p-8">
+// //         {initial}
+// //       </div>
+// //     )}
+// //     <h3 className="mt-4 text-lg font-semibold">{name}</h3>
+// //   </div>
+// // );
+
+// const ParticipantCard = ({ image, initial, name, alt = 'Participant', width = 160, height = 160 }) => (
 //   <div className="bg-white rounded-lg border p-6 flex flex-col items-center">
 //     {image ? (
 //       <Image
 //         src={image}
 //         alt={alt}
-//         width={160}
-//         height={160}
+//         width={width}
+//         height={height}
 //         className="rounded-full object-cover"
+//         priority
 //       />
 //     ) : (
-//       <div className="text-7xl bg-primary text-white rounded-full p-8">
+//       <div
+//         className="text-7xl bg-primary text-white rounded-full flex items-center justify-center"
+//         style={{ width, height }}
+//       >
 //         {initial}
 //       </div>
 //     )}
@@ -626,80 +649,57 @@ const stopInterview = () => {
 //   </div>
 // );
 
-const ParticipantCard = ({ image, initial, name, alt = 'Participant', width = 160, height = 160 }) => (
-  <div className="bg-white rounded-lg border p-6 flex flex-col items-center">
-    {image ? (
-      <Image
-        src={image}
-        alt={alt}
-        width={width}
-        height={height}
-        className="rounded-full object-cover"
-        priority
-      />
-    ) : (
-      <div
-        className="text-7xl bg-primary text-white rounded-full flex items-center justify-center"
-        style={{ width, height }}
-      >
-        {initial}
-      </div>
-    )}
-    <h3 className="mt-4 text-lg font-semibold">{name}</h3>
-  </div>
-);
 
+// const StatusIndicator = ({ activeUser }) => (
+//   <p className={`font-semibold ${activeUser ? 'text-green-600 animate-pulse' : 'text-yellow-600'}`}>
+//     {activeUser ? '🎤 Your Turn to Speak...' : '🤖 Listening to AI...'}
+//   </p>
+// );
 
-const StatusIndicator = ({ activeUser }) => (
-  <p className={`font-semibold ${activeUser ? 'text-green-600 animate-pulse' : 'text-yellow-600'}`}>
-    {activeUser ? '🎤 Your Turn to Speak...' : '🤖 Listening to AI...'}
-  </p>
-);
+// const ControlButton = ({ icon: Icon, ...props }) => (
+//   <button className="p-3 rounded-full transition-colors" {...props}>
+//     <Icon className="h-8 w-8 text-white" />
+//   </button>
+// );
 
-const ControlButton = ({ icon: Icon, ...props }) => (
-  <button className="p-3 rounded-full transition-colors" {...props}>
-    <Icon className="h-8 w-8 text-white" />
-  </button>
-);
+// // const CallEndButton = ({ loading, active, onClick }) => (
+// //   loading ? (
+// //     <Loader2Icon className="animate-spin h-12 w-12" />
+// //   ) : (
+// //     <ControlButton
+// //       icon={Phone}
+// //       onClick={onClick}
+// //       disabled={!active}
+// //       className={`${active ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-400'}`}
+// //       aria-label="End call"
+// //     />
+// //   )
+// // );
 
-// const CallEndButton = ({ loading, active, onClick }) => (
-//   loading ? (
+// const CallEndButton = ({ loading, active }) => {
+//   const router = useRouter();
+//   const params = useParams(); // returns an object of dynamic segments
+//   const interview_id = params?.interview_id;
+
+//   const handleClick = () => {
+//     if (!active || !interview_id) return;
+
+//     // Navigate to the completed page
+//     router.push(`/interview/${interview_id}/completed`);
+//   };
+
+//   return loading ? (
 //     <Loader2Icon className="animate-spin h-12 w-12" />
 //   ) : (
 //     <ControlButton
 //       icon={Phone}
-//       onClick={onClick}
+//       onClick={handleClick}
 //       disabled={!active}
 //       className={`${active ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-400'}`}
 //       aria-label="End call"
 //     />
-//   )
-// );
+//   );
+// };
 
-const CallEndButton = ({ loading, active }) => {
-  const router = useRouter();
-  const params = useParams(); // returns an object of dynamic segments
-  const interview_id = params?.interview_id;
-
-  const handleClick = () => {
-    if (!active || !interview_id) return;
-
-    // Navigate to the completed page
-    router.push(`/interview/${interview_id}/completed`);
-  };
-
-  return loading ? (
-    <Loader2Icon className="animate-spin h-12 w-12" />
-  ) : (
-    <ControlButton
-      icon={Phone}
-      onClick={handleClick}
-      disabled={!active}
-      className={`${active ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-400'}`}
-      aria-label="End call"
-    />
-  );
-};
-
-export default StartInterview;
+// export default StartInterview;
 
