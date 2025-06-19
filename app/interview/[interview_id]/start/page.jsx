@@ -1592,6 +1592,8 @@ function StartInterview() {
             }
           });
         }
+        console.log(user.user_metadata?.full_name);
+        console.log(user.email);
       } catch (error) {
         console.error("Fetch error:", error);
         toast.error('Failed to load interview data');
@@ -1724,44 +1726,129 @@ const handleCallEnd = async () => {
   };
 
 // 3. Update generateFeedback to use the ref as fallback
+// const generateFeedback = async () => {
+//   try {
+//     // Use state if available, otherwise fallback to ref
+//     const finalConversation = conversation.length > 0 ? conversation : conversationRef.current;
+    
+//     if (!finalConversation || finalConversation.length === 0) {
+//       throw new Error('No conversation available for feedback');
+//     }
+
+//     console.log('Generating feedback from:', finalConversation);
+    
+//     const  {data}  = await axios.post('/api/ai-feedback', {
+//       conversation: finalConversation,
+      
+      
+//     }
+//   );
+//   console.log(data);
+
+//     // 4. Update Supabase insert to handle all cases
+//     const { error } = await supabase
+//       .from('interview-feedback')
+//       .insert({
+//         interview_id,
+//         feedback: data.feedback || 'No feedback generated',
+        
+//         recommended: data.recommended || false,
+        
+//         created_at: new Date().toISOString()
+//       });
+
+//     if (error) throw error;
+
+//     return data;
+
+//   } catch (error) {
+//     console.error('Feedback error:', error);
+//     // Return minimal feedback structure
+//     return {
+//       feedback: "Interview completed. Feedback generation failed",
+//       recommended: false,
+//       score: null
+//     };
+//   }
+// };
+
+
 const generateFeedback = async () => {
   try {
-    // Use state if available, otherwise fallback to ref
     const finalConversation = conversation.length > 0 ? conversation : conversationRef.current;
-    
+
     if (!finalConversation || finalConversation.length === 0) {
       throw new Error('No conversation available for feedback');
     }
 
-    console.log('Generating feedback from:', finalConversation);
-    
-    const  {data}  = await axios.post('/api/ai-feedback', {
-      conversation: finalConversation,
-      
-      
-    }
-  );
-  console.log(data);
+    // Get authenticated user again
+    const { data: { user } } = await supabase.auth.getUser();
+    const fullName = user?.user_metadata?.full_name || "User";
+    const email = user?.email;
 
-    // 4. Update Supabase insert to handle all cases
+
+    console.log('Generating feedback from:', finalConversation);
+
+    const { data } = await axios.post('/api/ai-feedback', {
+      conversation: finalConversation,
+    });
+
+    console.log('Raw feedback from API:', data);
+    console.log(interviewInfo);
+    console.log(user.user_metadata?.full_name);
+        console.log(user.email);
+
+    // Step 1: Clean code block and parse JSON
+    const cleanedContent = data.content
+      ?.replace(/```json\s*|\s*```/g, '')
+      .trim();
+
+    let feedbackObj;
+    try {
+      feedbackObj = JSON.parse(cleanedContent).feedback;
+    } catch (parseError) {
+      throw new Error('Failed to parse feedback JSON: ' + parseError.message);
+    }
+
+    const {
+      rating,
+      summary,
+      Recommendation,         // Some responses use capital 'R'
+      recommendation,
+      RecommendationMsg,
+      recommendationMsg
+    } = feedbackObj;
+
+    // Prefer lowercase keys, fallback to uppercase
+    const summaryFinal = Array.isArray(summary) ? summary.join(' ') : summary || '';
+    const recommendationFinal = recommendation || Recommendation || '';
+    const recommendationMsgFinal = recommendationMsg || RecommendationMsg || '';
+    const isRecommended = recommendationFinal.toLowerCase().includes('yes') ;//|| recommendationFinal.toLowerCase().includes('recommended');
+
+    // Step 2: Store structured JSON in feedback column
+    const feedbackToStore = {
+      summary: summaryFinal,
+      rating,
+      recommendationMsg: recommendationMsgFinal
+    };
+
     const { error } = await supabase
       .from('interview-feedback')
       .insert({
         interview_id,
-        feedback: data.feedback || 'No feedback generated',
-        
-        recommended: data.recommended || false,
-        
+        userName: fullName,
+        userEmail: email,
+        feedback: feedbackToStore,
+        recommended: isRecommended,
         created_at: new Date().toISOString()
       });
 
     if (error) throw error;
 
-    return data;
+    return feedbackToStore;
 
   } catch (error) {
     console.error('Feedback error:', error);
-    // Return minimal feedback structure
     return {
       feedback: "Interview completed. Feedback generation failed",
       recommended: false,

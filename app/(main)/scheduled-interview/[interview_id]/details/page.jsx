@@ -18,7 +18,7 @@ function InterviewDetail() {
 
     const GetInterviewDetail=async()=>{
         const result=await supabase.from('Interviews')
-                .select('jobPosition, duration,jobDecscription,type,questionList,interview_id,created_at,interview-feedback(userEmail,userName,feedback,created_at)')
+                .select('jobPosition, duration,jobDescription,type,questionList,interview_id,created_at,interview-feedback(userEmail,userName,feedback,created_at,recommended)')
                .eq('userEmail', user?.email)
                 .order('id', { ascending: false })
                 console.log(result);
@@ -26,11 +26,16 @@ function InterviewDetail() {
                 console.log(InterviewDetail)
     }
   return (
-    <div className='mt-5'><h2 className='font-bold text-2xl'>InterviewDetail</h2>
+  <div className='mt-5'>
+    <h2 className='font-bold text-2xl'>InterviewDetail</h2>
     <InterviewDetailContainer interviewDetail={InterviewDetail}/>
-    {/* <CandidateList CandidateList={InterviewDetail?.['interview-feedback']}/> */}
-    </div>
-  )
+    {InterviewDetail?.['interview-feedback'] && (
+      <CandidateList CandidateList={InterviewDetail['interview-feedback']}/>
+    )}
+  </div>
+  
+)
+console.log(InterviewDetail['interview-feedback'])
 }
 
 export default InterviewDetail
