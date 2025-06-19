@@ -1735,11 +1735,12 @@ const generateFeedback = async () => {
 
     console.log('Generating feedback from:', finalConversation);
     
-    const { data } = await axios.post('/api/ai-feedback', {
+    const  {data}  = await axios.post('/api/ai-feedback', {
       conversation: finalConversation,
-      interview_id,
-      jobPosition: interviewInfo?.InterviewData?.jobPosition || 'Unknown'
-    });
+      
+      
+    }
+  );console.log(data);
 
     // 4. Update Supabase insert to handle all cases
     const { error } = await supabase
@@ -1747,9 +1748,9 @@ const generateFeedback = async () => {
       .insert({
         interview_id,
         feedback: data.feedback || 'No feedback generated',
-        transcript: JSON.stringify(finalConversation),
+        
         recommended: data.recommended || false,
-        score: data.score || null,
+        
         created_at: new Date().toISOString()
       });
 
