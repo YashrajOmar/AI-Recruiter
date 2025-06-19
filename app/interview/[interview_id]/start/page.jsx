@@ -1740,7 +1740,8 @@ const generateFeedback = async () => {
       
       
     }
-  );console.log(data);
+  );
+  console.log(data);
 
     // 4. Update Supabase insert to handle all cases
     const { error } = await supabase
