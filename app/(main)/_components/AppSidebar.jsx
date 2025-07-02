@@ -23,7 +23,7 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className='flex items-center mt-1'>
-        <Link href="/">
+        
     <Image
       src="/logo.png" // ← replace with your actual logo path
       alt="App Logo"
@@ -32,11 +32,11 @@ export function AppSidebar() {
       className="rounded-lg" // Optional styling
       priority // Improves loading
     />
-  </Link>
+  
         {/* <Image src={"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="} alt="" width={100} height={100} className=""/> */}
-        <Button className='w-full mt-1 '>
+       <Link href={'/dashboard/create-interview' } className='w-full mt-1 '> <Button className='w-full mt-1 '>
           <Plus />Create New Interview
-        </Button>
+        </Button></Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

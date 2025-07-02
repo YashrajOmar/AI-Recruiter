@@ -1,44 +1,33 @@
-// "use client"
-// import { useUser } from '@/app/provider';
-// import React from 'react'
-
-// function WelcomeContainer() {
-//     const {user}=useUser();
-//   return (<div>
-//     <div className='bg-white p-5 rounded-xl flex justify-between items-center'>
-//         <h2 className='text-lg font-bold'> Welcome Back, {user?.name}</h2>
-//         <h2 className='text-gray-500'>AI-Driven Interviews, Hassel-Free Hiring</h2>
-//     </div>
-//     {user&&<Image src={user?.picture} alt='userAvatar' width={50} height={50} className='rounded-full' />}
-//     </div>
-//   )
-// }
-
-// export default WelcomeContainer
-
 "use client";
 import { useUser } from '@/app/provider';
 import Image from 'next/image';
 import React from 'react';
 
 function WelcomeContainer() {
-  const { user } = useUser(); // ✅ Call the hook
+  const { user } = useUser();
 
   return (
-    <div>
-      <div className='bg-white p-5 rounded-xl flex justify-between items-center'>
-        <h2 className='text-lg font-bold'> Welcome Back, {user?.name}</h2>
-        <h2 className='text-gray-500'>AI-Driven Interviews, Hassle-Free Hiring</h2>
+    <div className="bg-white p-6 rounded-2xl shadow-md">
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h2 className="text-xl font-bold text-gray-800">
+            Welcome Back{user?.name ? `, ${user.name}` : ''} 👋
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">
+            AI-Driven Interviews, Hassle-Free Hiring
+          </p>
+        </div>
+
+        {user?.picture && (
+          <Image
+            src={user.picture}
+            alt="User Avatar"
+            width={50}
+            height={50}
+            className="rounded-full border-2 border-gray-300 hover:scale-105 transition-transform duration-200"
+          />
+        )}
       </div>
-      {user?.picture && (
-        <Image
-          src={user.picture}
-          alt='userAvatar'
-          width={50}
-          height={50}
-          className='rounded-full'
-        />
-      )}
     </div>
   );
 }
