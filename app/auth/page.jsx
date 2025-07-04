@@ -14,7 +14,7 @@ function Login() {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: 'https://ai-interviewer-qaqf.vercel.app/dashboard', 
+      redirectTo: 'https://ai-interviewer-3-3e6p.onrender.com/dashboard', 
     },
   });
 
