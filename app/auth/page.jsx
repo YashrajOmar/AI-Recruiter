@@ -14,7 +14,7 @@ function Login() {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: 'http://localhost:3000/dashboard', // or your production URL
+      redirectTo: 'https://ai-interviewer-qaqf.vercel.app/dashboard', 
     },
   });
 
