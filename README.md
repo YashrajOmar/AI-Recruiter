@@ -19,7 +19,14 @@ An end-to-end full-stack AI interview assistant built with **Next.js**, **React*
 ---
 # 🧩 How It Works
 ## Interview Flow
+```mermaid
 sequenceDiagram
+    participant Recruiter
+    participant Frontend
+    participant OpenRouter
+    participant Vapi
+    participant Candidate
+    
     Recruiter->>+Frontend: Create interview
     Frontend->>+OpenRouter: Generate questions
     OpenRouter-->>-Frontend: Question set
@@ -29,7 +36,7 @@ sequenceDiagram
     Vapi-->>-Frontend: Transcript
     Frontend->>OpenRouter: Evaluate
     OpenRouter-->>Frontend: Feedback report
-
+```
 ---
 ## 📈 Database Schema
 
